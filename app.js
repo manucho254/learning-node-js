@@ -1,35 +1,38 @@
-const http = require("http");
+const express = require("express");
 
-const { readFileSync } = require('fs');
-const homePage = readFileSync('./express-tutorial/navbar-app/index.html')
-const homeStyles = readFileSync('./express-tutorial/navbar-app/styles.css')
-const homeLogic = readFileSync('./express-tutorial/navbar-app/browser-app.js')
- 
-const server = http.createServer((req, res) => {
-  const url = req.url
-  if (url === "/") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.write(homePage);
-    res.end();
-  }
-  else if (url === "/styles.css") {
-    res.writeHead(200, { "content-type": "text/css" });
-    res.write(homeStyles);
-    res.end();
-  }
-  else if (url === "/browser-app.js") {
-    res.writeHead(200, { "content-type": "text/javascript" });
-    res.write(homeLogic);
-    res.end();
-  }
-  else if(url === "/about") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.write("<h1>About page</h1>");
-    res.end();
-  }else {
-    res.writeHead(404, { "content-type": "text/html" });
-    res.write("<h1>Error page</h1>");
-    res.end();
-  }
+const app = express();
+
+const { products } = require("./data");
+
+app.get("/", (req, res) => {
+  res.send(
+    "<h1>Home page </h1><br><a href='/api/products'>products</a>"
+  );
 });
-server.listen(5000);
+
+app.get("/api/products/:productId/reviews/:reviewId", (req, res) => {
+  console.log(req.params)
+});
+
+// api query params
+app.get("/api/products", (req, res) => {
+  console.log(req.query)
+  // destructuring so that we only get the data we need
+  const newProducts = products.map((product) => {
+    const { id, name, image } = product;
+    return { id, name, image };
+  });
+  res.json(newProducts);
+});
+
+app.get("/api/products/:productId", (req, res) => {
+  let { productId } = req.params;
+  let product = products.find((product) => product.id === Number(productId));
+  if (!product) {
+    res.status(404).json([{ message: "Product not found" }]);
+  } else res.json(product);
+});
+
+app.listen(5000, () => {
+  console.log("Server is listening on port 5000....");
+});
