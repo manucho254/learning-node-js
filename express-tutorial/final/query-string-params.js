@@ -27,6 +27,21 @@ app.get("/api/products/:productId", (req, res) => {
   } else res.json(product);
 });
 
+app.get("/api/v1/query", (req, res) => {
+  const { search, limit } = req.query;
+  let sortedProducts = [...products];
+  if (search) {
+    sortedProducts = sortedProducts.filter((product) => {
+      return product.name.startsWith(search)
+    })
+  }
+  if (limit) {
+    sortedProducts = sortedProducts.slice(0, Number(limit))
+  }
+
+  return res.status(200).json(sortedProducts)
+});
+
 app.listen(5000, () => {
   console.log("Server is listening on port 5000....");
 });

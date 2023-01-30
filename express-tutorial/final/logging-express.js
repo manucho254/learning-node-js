@@ -1,19 +1,25 @@
+//  logging using morgan
+
 // express middleware
 
 const express = require("express");
 const app = express();
-const logger = require("./express-tutorial/final/logger");
-const authorize = require("./authorize");
+// const logger = require("./express-tutorial/final/logger");
+// const authorize = require("./express-tutorial/final/authorize");
+const morgan = require("morgan")
+
 
 // req => middleware => res
+ 
+// 1. use vs route
+ 
+// 2. options - our own / express / third party
 
-// app.use(logger)
+app.use(morgan("tiny"));
 
-// add route to middleware
-
-app.use("/api", logger);
-
-// api/home/about/products
+app.get("/", (req, res) => {
+  res.send("Home");
+});
 
 app.get("/", (req, res) => {
   res.send("Home");
@@ -29,11 +35,6 @@ app.get("/api/products", (req, res) => {
 
 app.get("/api/items", (req, res) => {
   res.send("items");
-});
-
-// using double middleware
-app.get("/api/orders", [logger, authorize], (req, res) => {
-  res.send("orders");
 });
 
 app.listen(5000, () => {

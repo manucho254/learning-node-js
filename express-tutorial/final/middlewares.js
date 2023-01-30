@@ -3,17 +3,25 @@
 const express = require("express");
 const app = express();
 const logger = require("./express-tutorial/final/logger");
-const authorize = require("./authorize");
+const authorize = require("./express-tutorial/final/authorize");
 
 // req => middleware => res
+ 
+// app.use(logger);
 
-// app.use(logger)
+// @desc Using multiple middleware
+
+app.use([logger, authorize]);
 
 // add route to middleware
 
-app.use("/api", logger);
+// app.use("/api", logger)
 
 // api/home/about/products
+
+app.get("/", (req, res) => {
+  res.send("Home");
+});
 
 app.get("/", (req, res) => {
   res.send("Home");
@@ -29,11 +37,6 @@ app.get("/api/products", (req, res) => {
 
 app.get("/api/items", (req, res) => {
   res.send("items");
-});
-
-// using double middleware
-app.get("/api/orders", [logger, authorize], (req, res) => {
-  res.send("orders");
 });
 
 app.listen(5000, () => {
