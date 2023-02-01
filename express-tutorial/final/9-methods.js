@@ -40,7 +40,7 @@ app.post("/api/people", (req, res) => {
   res.status(400).json({ success: false, msg: "please provide name value." });
 });
 
-app.post("/api/postman/people", (req, res) => {
+app.post("/api/people/postman", (req, res) => {
   console.log(req.body);
   const { name } = req.body;
 
