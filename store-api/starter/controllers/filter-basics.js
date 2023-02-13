@@ -6,6 +6,7 @@ const createProducts = async (req, res) => {
 };
 
 const getProductsStatic = async (req, res) => {
+  // filtering in .find nodejs
   const products = await Product.find({ featured: true });
   res.status(200).json({ nbHits: products.length, products });
 };

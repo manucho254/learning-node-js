@@ -7,7 +7,7 @@ const createProducts = async (req, res) => {
 
 const getProductsStatic = async (req, res) => {
   // sorting mongodb
-  const products = await Product.find({ price: { $gt:30, $lt: 300 } })
+  const products = await Product.find({ price: { $gt: 30, $lt: 300 } })
     .sort("price")
     .select("name price");
   res.status(200).json({ nbHits: products.length, products });
@@ -16,7 +16,7 @@ const getProductsStatic = async (req, res) => {
 const getProducts = async (req, res) => {
   // get only the query params that we want to use
 
-  const { featured, company, name, sort, fields } = req.query;
+  const { featured, company, name, sort, fields, numericFilters } = req.query;
   const queryObject = {};
 
   // checking if we have feature query
@@ -36,8 +36,30 @@ const getProducts = async (req, res) => {
     queryObject.name = { $regex: name, $options: "i" };
   }
 
-  // console.log(queryObject);
   // querying products
+
+  // filtering using greater on less than
+  if (numericFilters) {
+    const operatorMap = {
+      ">": "$gt",
+      ">=": "$gte",
+      "eq": "$eq",
+      "<": "$lt",
+      "<=": "$lte",
+    };
+    const regEx = /\b(<|>|>=|=|<|<=)\b/g;
+    let filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
+    const options = ["price", "rating"];
+    filters = filters.split(",").forEach((item) => {
+      const [field, operator, value] = item.split("-");
+      if (options.includes(field)) {
+        queryObject[field] = { [operator]: Number(value) };
+      }
+    });
+  }
 
   let result = Product.find(queryObject);
 
@@ -61,6 +83,8 @@ const getProducts = async (req, res) => {
   const skip = (page - 1) * limit;
 
   result = result.limit(limit).skip(skip);
+
+  console.log(queryObject);
 
   const products = await result;
 
