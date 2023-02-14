@@ -2,12 +2,11 @@ const { StatusCodes } = require("http-status-codes");
 const Job = require("../models/user");
 
 const createJob = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: "jobs" });
+  res.status(StatusCodes.CREATED).json({ msg: "jobs" });
 };
 
 const getJobs = async (req, res) => {
-  const jobs = Job.find({});
-  res.status(StatusCodes.OK).json({ jobs });
+  res.status(StatusCodes.OK).json({ user: req.user });
 };
 
 const getJob = async (req, res) => {
@@ -19,7 +18,7 @@ const updateJob = async (req, res) => {
 };
 
 const deleteJob = async (req, res) => {
-  res.status(StatusCodes.OK).json({ msg: "jobs" });
+  res.status(StatusCodes.NO_CONTENT).json({ msg: "jobs" });
 };
 
 module.exports = { createJob, getJobs, getJob, updateJob, deleteJob };
