@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const Job = require("../models/user");
 
 const createJob = async (req, res) => {
+  console.log(req.user)
   res.status(StatusCodes.CREATED).json({ msg: "jobs" });
 };
 

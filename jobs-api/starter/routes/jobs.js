@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getJobs,
   createJob,
+  getJobs,
   getJob,
   updateJob,
   deleteJob,
