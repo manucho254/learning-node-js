@@ -7,6 +7,22 @@ const xss = require("xss-clean");
 const cors = require("cors");
 const rateLimiter = require("express-rate-limit");
 
+// swaggerDocs
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDoc = YAML.load("./swagger.yaml");
+
+// setting up url for local and production environment
+const { servers } = swaggerDoc;
+let url = servers.map((item) => item.url)[0];
+if (process.env.NODE_ENV === "local") {
+  url = process.env.LOCAL_URL;
+} else {
+  url = process.env.PRODUCTION_URL;
+}
+swaggerDoc.servers[0].url = url;
+
+//
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
@@ -35,8 +51,11 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(cors());
+app.use(cors({ origin: "http://localhost", optionsSuccessStatus: 200 }));
 app.use(xss());
+
+// swagger docs route
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
 // app routes
 app.use("/api/v1/auth", authRoutes);
